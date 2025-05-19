@@ -1,0 +1,34 @@
+body {
+    font-family: 'Arial', sans-serif; /* フォントファミリーを指定 */
+    /* Tailwind classes will handle flex, bg, etc. */
+}
+
+.game-board {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr); /* 横10マス */
+    grid-template-rows: repeat(20, 1fr);    /* 縦20マス */
+    border: 2px solid #333; /* 枠線 */
+    border-radius: 4px; /* 角を少し丸く */
+    background-color: #e0e0e0; /* ゲームボードの背景色 */
+    width: 100%; /* 親要素の幅に合わせる */
+    aspect-ratio: 10 / 20; /* アスペクト比を1:2に固定 */
+    max-width: 300px; /* 最大幅 (例: 10セル x 30px) */
+    /* max-height: 600px; /* 最大高さ (例: 20セル x 30px) - aspect-ratioがこれを制御 */
+    margin-left: auto;  /* 中央寄せのため */
+    margin-right: auto; /* 中央寄せのため */
+}
+
+.next-mino-area {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 横4マス */
+    grid-template-rows: repeat(4, 1fr);    /* 縦4マス */
+    border: 2px solid #333; /* 枠線 */
+    border-radius: 4px; /* 角を少し丸く */
+    background-color: #e0e0e0; /* 背景色 */
+    width: 100%; /* 親要素の幅に合わせる */
+    aspect-ratio: 1 / 1; /* アスペクト比を1:1に固定 (正方形) */
+    max-width: 120px; /* 最大幅 (例: 4セル x 30px) */
+    /* max-height: 120px; /* 最大高さ - aspect-ratioがこれを制御 */
+    margin-left: auto;
+    margin-right: auto;
+}
