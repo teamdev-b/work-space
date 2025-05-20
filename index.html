@@ -9,35 +9,41 @@
 </head>
 <body class="bg-gray-100 flex flex-col items-center min-h-screen pt-4 sm:pt-8">
 
-    <h1 class="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6 text-gray-800">Tetris</h1>
+    <!-- タイトル -->
+    <h1 class="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6">Tetris</h1>
 
     <div class="game-container-wrapper w-full max-w-3xl mx-auto px-2 sm:px-4">
         <div class="game-container relative bg-white p-3 sm:p-5 rounded-lg shadow-lg flex flex-col md:flex-row md:space-x-0 md:gap-4">
-            
+            <!-- ゲームボード（プレイフィールド） -->
             <div class="game-board-wrapper w-full md:w-auto md:flex-grow flex justify-center items-start">
                  <div id="game-board" class="game-board">
                  </div>
             </div>
 
+            <!-- サイドパネル -->
             <div class="side-panel-wrapper w-full md:w-40 lg:w-48 mt-4 md:mt-0 flex-shrink-0">
                 <div class="side-panel flex flex-col space-y-3 sm:space-y-4">
+                    <!-- スコア表示 -->
                     <div>
-                        <h2 class="text-lg sm:text-xl font-semibold text-gray-700 text-center">Score</h2>
+                        <h2 class="text-lg sm:text-xl font-semibold text-center">Score</h2>
                         <p id="score-display" class="text-2xl sm:text-3xl font-bold text-blue-600 text-center">0</p>
                     </div>
 
+                    <!-- Nextミノエリア -->
                     <div>
-                        <h2 class="text-lg sm:text-xl font-semibold text-gray-700 text-center mb-1">Next</h2>
-                        <div id="next-mino-area" class="next-mino-area bg-gray-200 border-2 border-gray-700 rounded">
+                        <h2 class="text-lg sm:text-xl font-semibold text-center mb-1">Next</h2>
+                        <div id="next-mino-area" class="next-mino-area border-2 rounded">
                         </div>
                     </div>
 
+                    <!-- スタートボタン -->
                     <button id="start-pause-button" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 sm:py-3 px-3 sm:px-4 rounded-lg shadow transition duration-150 ease-in-out text-base sm:text-lg">
                         Start
                     </button>
                 </div>
             </div>
             
+            <!-- ゲームオーバー画面 -->
             <div id="game-over-message" class="hidden absolute inset-0 bg-black bg-opacity-75 flex flex-col justify-center items-center p-4 rounded-lg">
                 <h2 class="text-2xl sm:text-3xl font-bold text-red-500 mb-4 text-center">Game Over</h2>
                 <p class="text-lg sm:text-xl text-white text-center">Your Score: <span id="final-score">0</span></p>
@@ -47,29 +53,6 @@
             </div>
         </div>
     </div>
-
-    <script>
-        // JavaScriptの初期設定やDOM要素の取得はここで行います。
-        const gameBoard = document.getElementById('game-board');
-        const scoreDisplay = document.getElementById('score-display');
-        const startPauseButton = document.getElementById('start-pause-button');
-        const nextMinoArea = document.getElementById('next-mino-area');
-        const gameOverMessage = document.getElementById('game-over-message');
-        const finalScoreDisplay = document.getElementById('final-score');
-        const restartButton = document.getElementById('restart-button');
-
-        // ゲームボードのセルを動的に生成する例 (10x20)
-        // for (let i = 0; i < 200; i++) {
-        //     const cell = document.createElement('div');
-        //     // cell.style.border = '1px solid #ddd'; // グリッド線が見えるように (デバッグ用)
-        //     gameBoard.appendChild(cell);
-        // }
-        // ネクストミノエリアのセルを動的に生成する例 (4x4)
-        // for (let i = 0; i < 16; i++) {
-        //     const cell = document.createElement('div');
-        //     // cell.style.border = '1px solid #bbb'; // グリッド線が見えるように (デバッグ用)
-        //     nextMinoArea.appendChild(cell);
-        // }
-    </script>
+    <script src=""></script>
 </body>
 </html>
