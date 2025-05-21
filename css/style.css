@@ -32,3 +32,30 @@ body {
     margin-left: auto;
     margin-right: auto;
 }
+
+.game-board, .next-mino-area {
+    gap: 1px;
+    background-color: #333;
+}
+
+.game-board-cell {
+    width: 100%;
+    height: 100%;
+    background-color: #e0e0e0;
+    box-sizing: border-box;
+}
+
+.next-area-cell {
+    width: 100%;
+    height: 100%;
+    background-color: #e0e0e0;
+    box-sizing: border-box;
+}
+
+.mino-cyan { background-color: cyan; border: 1px solid #008B8B; }
+.mino-yellow { background-color: yellow; border: 1px solid #B8860B; }
+.mino-purple { background-color: purple; border: 1px solid #4B0082; }
+.mino-green { background-color: limegreen; border: 1px solid #006400; }
+.mino-red { background-color: red; border: 1px solid #8B0000; }
+.mino-blue { background-color: blue; border: 1px solid #00008B; }
+.mino-orange { background-color: orange; border: 1px solid #A0522D; }
