@@ -1,0 +1,17 @@
+// 定数
+export const BOARD_WIDTH = 10;
+export const BOARD_HEIGHT = 20;
+export const NEXT_AREA_SIZE = 4;
+
+// ブロックの定義
+export const TETROMINOES = {
+    'I': { shape: [[1, 1, 1, 1]], color: 'mino-cyan' },
+    'O': { shape: [[1, 1], [1, 1]], color: 'mino-yellow' },
+    'T': { shape: [[0, 1, 0], [1, 1, 1]], color: 'mino-purple' },
+    'S': { shape: [[0, 1, 1], [1, 1, 0]], color: 'mino-green' },
+    'Z': { shape: [[1, 1, 0], [0, 1, 1]], color: 'mino-red' },
+    'J': { shape: [[1, 0, 0], [1, 1, 1]], color: 'mino-blue' },
+    'L': { shape: [[0, 0, 1], [1, 1, 1]], color: 'mino-orange' }
+};
+
+export const MINO_TYPES = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'];
