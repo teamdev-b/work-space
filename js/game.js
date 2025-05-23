@@ -1,4 +1,10 @@
-import { BOARD_WIDTH, BOARD_HEIGHT, NEXT_AREA_SIZE, TETROMINOES, MINO_TYPES } from './constants.js';
+import { 
+    BOARD_WIDTH, 
+    BOARD_HEIGHT, 
+    NEXT_AREA_SIZE, 
+    TETROMINOES, 
+    MINO_TYPES 
+} from './constants.js';
 
 // 外部で定義される変数を格納用としてexport
 export let boardCells = [];
@@ -10,7 +16,10 @@ export let gameStarted = false;
 // DOM要素は main.js 側で渡す想定にする
 let gameBoard, scoreDisplay, startPauseButton, nextMinoArea, gameOverMessage;
 
-export function initDOMElements({ board, score, button, nextArea, gameOver }) {
+/*
+* 取得したDOM要素を初期化する
+*/
+export function initGameDOMElements({ board, score, button, nextArea, gameOver }) {
     gameBoard = board;
     scoreDisplay = score;
     startPauseButton = button;
@@ -18,6 +27,10 @@ export function initDOMElements({ board, score, button, nextArea, gameOver }) {
     gameOverMessage = gameOver;
 }
 
+
+/*
+* 取得したDOM要素を初期化する
+*/
 export function createGridCells(rows, cols, containerElement, cellBaseClass) {
     containerElement.innerHTML = '';
     const cells = [];
@@ -34,6 +47,9 @@ export function createGridCells(rows, cols, containerElement, cellBaseClass) {
     return cells;
 }
 
+/*
+* プレイフィールドとNextを初期化する
+*/
 export function initializeBoardAndNextArea() {
     boardCells = createGridCells(BOARD_HEIGHT, BOARD_WIDTH, gameBoard, 'game-board-cell');
     nextMinoCells = createGridCells(NEXT_AREA_SIZE, NEXT_AREA_SIZE, nextMinoArea, 'next-area-cell');
@@ -43,17 +59,23 @@ export function initializeBoardAndNextArea() {
     gameOverMessage.classList.add('hidden');
 }
 
+/*
+* ランダムにミノを生成する
+*/
 export function getRandomMino() {
     const type = MINO_TYPES[Math.floor(Math.random() * MINO_TYPES.length)];
     const minoData = TETROMINOES[type];
     return {
-        shape: minoData.shape.map(row => [...row]),
+        shape: minoData.shape.map(row => [...row]), // ミノの内容を新たな配列として展開する
         color: minoData.color,
         x: 0,
         y: 0
     };
 }
 
+/*
+* クラスを付与しミノの各ブロック部分を描写する
+*/
 export function drawMinoOnGrid(mino, gridCellArray, baseCellClass) {
     if (!mino || !mino.shape) return;
     mino.shape.forEach((row, r_offset) => {
@@ -69,7 +91,11 @@ export function drawMinoOnGrid(mino, gridCellArray, baseCellClass) {
     });
 }
 
+/*
+* Nextにミノを配置する
+*/
 export function displayNextMino() {
+    // いったん内容をリセットする
     for (let r = 0; r < NEXT_AREA_SIZE; r++) {
         for (let c = 0; c < NEXT_AREA_SIZE; c++) {
             if (nextMinoCells[r] && nextMinoCells[r][c]) {
@@ -82,6 +108,7 @@ export function displayNextMino() {
     const shapeHeight = nextMino.shape.length;
     const shapeWidth = nextMino.shape[0] ? nextMino.shape[0].length : 0;
 
+    // エリア中央に設定する
     const minoToDisplay = {
         shape: nextMino.shape,
         color: nextMino.color,
@@ -95,6 +122,9 @@ export function displayNextMino() {
     drawMinoOnGrid(minoToDisplay, nextMinoCells, 'next-area-cell');
 }
 
+/*
+* メインフィールドとNextにミノを配置する
+*/
 export function spawnNewMino() {
     currentMino = nextMino;
     nextMino = getRandomMino();
@@ -110,6 +140,9 @@ export function spawnNewMino() {
     displayNextMino();
 }
 
+/*
+* ボタンクリック時の開始関数
+*/
 export function handleStartButtonClick() {
     if (!gameStarted) {
         gameStarted = true;

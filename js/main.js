@@ -1,7 +1,7 @@
 import {
-    initializeBoardAndNextArea,
-    handleStartButtonClick,
-    initDOMElements
+	initializeBoardAndNextArea,
+	handleStartButtonClick,
+	initGameDOMElements
 } from './game.js';
 
 /*
@@ -16,7 +16,7 @@ const nextMinoArea = document.getElementById('next-mino-area');
 const gameOverMessage = document.getElementById('game-over-message');
 
 // DOM参照をgame.jsへ渡す
-initDOMElements({
+initGameDOMElements({
     board: gameBoard,
     score: scoreDisplay,
     button: startPauseButton,

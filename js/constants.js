@@ -3,7 +3,7 @@ export const BOARD_WIDTH = 10;
 export const BOARD_HEIGHT = 20;
 export const NEXT_AREA_SIZE = 4;
 
-// ブロックの定義
+// ミノの定義（1:ブロックあり 0:ブロックなし）
 export const TETROMINOES = {
     'I': { shape: [[1, 1, 1, 1]], color: 'mino-cyan' },
     'O': { shape: [[1, 1], [1, 1]], color: 'mino-yellow' },
