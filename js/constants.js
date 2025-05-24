@@ -1,4 +1,4 @@
-// 定数
+// プレイフィールドとNext用の定数
 export const BOARD_WIDTH = 10;
 export const BOARD_HEIGHT = 20;
 export const NEXT_AREA_SIZE = 4;
@@ -15,3 +15,10 @@ export const TETROMINOES = {
 };
 
 export const MINO_TYPES = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'];
+
+// 自動落下用の定数
+export const DROP_INTERVAL = 1000; // 1000ミリ秒 = 1秒ごとに落下
+
+// CSSクラス名を定数化
+export const GAME_BOARD_CELL_CLASS = 'game-board-cell';
+export const NEXT_AREA_CELL_CLASS = 'next-area-cell';
