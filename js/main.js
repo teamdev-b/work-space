@@ -4,8 +4,8 @@ import {
 	initGameDOMElements
 } from './game.js';
 
-
 import { initializeBlockControls } from './block.js';
+
 /*
 ================================================================================
   DOM要素の取得

@@ -9,6 +9,8 @@ import {
     NEXT_AREA_CELL_CLASS
 } from './constants.js';
 
+import { checkCollision } from './collision.js';
+
 // 外部で定義される変数を格納用としてexport
 export let boardCells = [];
 export let nextMinoCells = [];
@@ -19,6 +21,9 @@ export let gameStarted = false;
 // ゲームループ関連の変数
 let lastDropTime = 0;
 let gameLoopId = null;
+
+// 固定されたブロックの状態を保持する配列
+let gameBoardState = [];
 
 /*
 * 取得したDOM要素を初期化する（main.js側で渡す想定）
@@ -57,6 +62,10 @@ export function createGridCells(rows, cols, containerElement, cellBaseClass) {
 export function initializeBoardAndNextArea() {
     boardCells = createGridCells(BOARD_HEIGHT, BOARD_WIDTH, gameBoard, GAME_BOARD_CELL_CLASS);
     nextMinoCells = createGridCells(NEXT_AREA_SIZE, NEXT_AREA_SIZE, nextMinoArea, NEXT_AREA_CELL_CLASS);
+
+    // 固定されたブロックの状態を初期化 (全て0にする)
+    gameBoardState = Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0));
+
     scoreDisplay.textContent = '0';
     startPauseButton.textContent = 'Start';
     gameStarted = false;
@@ -70,6 +79,10 @@ export function initializeBoardAndNextArea() {
     // ゲーム状態もリセット
     currentMino = null;
     nextMino = null;
+
+    // 初期化時にプレイフィールドとNextをクリア表示
+    redrawGameBoard(); 
+    displayNextMino(); 
 }
 
 /*
@@ -105,16 +118,47 @@ export function drawMinoOnGrid(mino, gridCellArray, baseCellClass) {
 }
 
 /**
+ * ミノをゲームボードに固定する関数
+ */
+function lockMino() {
+    if (!currentMino) return;
+
+    currentMino.shape.forEach((row, rOffset) => {
+        row.forEach((cellValue, cOffset) => {
+            if (cellValue === 1) {
+                const boardX = currentMino.x + cOffset;
+                const boardY = currentMino.y + rOffset;
+                if (boardY >= 0 && boardY < BOARD_HEIGHT && boardX >= 0 && boardX < BOARD_WIDTH) {
+                    gameBoardState[boardY][boardX] = currentMino.color;
+                }
+            }
+        });
+    });
+    currentMino = null; // 固定したら操作対象のミノをなくす
+    // TODO: 新しいミノを出す
+}
+
+
+/**
  * 自動落下に際し、ゲームボード全体をクリアし現在のミノを描画する
  */
 function redrawGameBoard() {
-    // TODO: 固定されたブロックの描画を考慮する
-
     // boardCellsが未初期化なら何もしない
     if (!boardCells.length) return;
 
     // ボード全体をクリア
     boardCells.forEach(row => row.forEach(cell => cell.className = GAME_BOARD_CELL_CLASS));
+
+    // 固定するブロックの位置を設定する
+    for (let r = 0; r < BOARD_HEIGHT; r++) {
+        for (let c = 0; c < BOARD_WIDTH; c++) {
+            if (gameBoardState[r][c] !== 0) {
+                if (boardCells[r] && boardCells[r][c]) {
+                    boardCells[r][c].className = `${GAME_BOARD_CELL_CLASS} ${gameBoardState[r][c]}`;
+                }
+            }
+        }
+    }
 
     // 現在のミノを描画
     if (currentMino) {
@@ -173,12 +217,18 @@ export function spawnNewMino() {
 }
 
 /**
- * 現在のミノを1マス下に単純に移動させる処理。
+ * 現在のミノを1マス下に動かす。衝突すれば固定する。
  */
-function simpleMoveMinoDown() {
+function moveMinoDown() {
     if (!currentMino || !gameStarted) return;
-    currentMino.y++; // Y座標を1増やす
-    redrawGameBoard(); // 画面を再描画
+    const testMino = { ...currentMino, y: currentMino.y + 1 };
+
+    if (checkCollision(testMino, gameBoardState)) { // インポートしたcheckCollisionを使用
+        lockMino();
+    } else {
+        currentMino.y++;
+    }
+    redrawGameBoard(); // 移動後または固定後の盤面を再描画
 }
 
 /**
@@ -198,7 +248,7 @@ function gameLoop(timestamp) {
     // 経過時間(Time)が、設定した落下間隔(DROP_INTERVAL)を超えたかどうかを確認する
     if (elapsedTime > DROP_INTERVAL) {
         // ブロックを1マス下に落とす処理を実行
-        simpleMoveMinoDown();
+        moveMinoDown();
         // 最終落下時刻を現在の時刻に更新し、次回の落下タイミングの基準にする
         lastDropTime = timestamp;
     }
