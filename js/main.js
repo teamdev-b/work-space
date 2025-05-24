@@ -4,6 +4,8 @@ import {
 	initGameDOMElements
 } from './game.js';
 
+
+import { initializeBlockControls } from './block.js';
 /*
 ================================================================================
   DOM要素の取得
@@ -37,3 +39,4 @@ startPauseButton.addEventListener('click', handleStartButtonClick);
 ================================================================================
 */
 initializeBoardAndNextArea();
+initializeBlockControls();
