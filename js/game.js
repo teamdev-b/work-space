@@ -139,8 +139,6 @@ export function lockMino() {
             }
         });
     });
-    // currentMino = null; // spawnNewMinoで上書きされるので、ここでnullにしなくても良い
-
     // 新しいミノを出現させる処理
     spawnNewMino(); 
     
@@ -229,12 +227,7 @@ export function spawnNewMino() {
                 // TODO: finalScoreDisplay にスコアを表示するなどの処理
             }
             currentMino = null; // 操作ミノをなくす
-            // ゲームループは gameLoop関数内の gameStarted チェックで停止する
         }
-
-        // 重複描画を避けるため、spawnNewMino時の描画はredrawGameBoardに任せる
-        // boardCells.forEach(row => row.forEach(cell => cell.className = GAME_BOARD_CELL_CLASS));
-        // drawMinoOnGrid(currentMino, boardCells, GAME_BOARD_CELL_CLASS);
     }
     displayNextMino();
 }

@@ -80,7 +80,6 @@ function rotateMino() {
         currentMino.shape = rotatedShape;
         redrawGameboardFromGame(); // game.jsの描画関数を呼び出す
     }
-    // 壁キックなどのロジックをここに追加することも可能
 }
 
 /**
@@ -91,7 +90,7 @@ function softDrop() {
     if (canPlaceMino(currentMino, currentMino.x, currentMino.y + 1)) {
         currentMino.y++;
         redrawGameboardFromGame(); // game.jsの描画関数を呼び出す
-        // ソフトドロップで得点がある場合はここで処理
+        // TODO: ソフトドロップで得点がある場合はここで処理
     } else {
         // 下に動かせない場合は固定処理をgame.jsのlockMinoに任せる
         lockMino(); // 固定処理を呼び出す
@@ -108,7 +107,6 @@ function hardDrop() {
         y++;
     }
     currentMino.y = y;
-    // redrawGameboardFromGame(); // lockMinoが描画するので不要
     lockMino(); // game.jsの固定処理と再描画を呼び出す
 }
 
@@ -149,9 +147,6 @@ function handleKeyPress(event) {
  * この関数をmain.jsから呼び出して初期化する
  */
 export function initializeBlockControls() {
-    // 固定ブロック配列を初期化
-    // initializeFixedBlocks();
-
     // キーボードイベントリスナーを設定
     document.addEventListener('keydown', handleKeyPress);
 }
