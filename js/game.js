@@ -25,6 +25,11 @@ let gameLoopId = null;
 // 固定されたブロックの状態を保持する配列
 let gameBoardState = [];
 
+// block.jsから盤面状態を参照するためのゲッター関数
+export function getGameBoardState() {
+    return gameBoardState;
+}
+
 /*
 * 取得したDOM要素を初期化する（main.js側で渡す想定）
 */
@@ -120,7 +125,7 @@ export function drawMinoOnGrid(mino, gridCellArray, baseCellClass) {
 /**
  * ミノを固定した後、新しいミノをスポーンし、盤面を再描画
  */
-function lockMino() {
+export function lockMino() {
     if (!currentMino) return;
 
     currentMino.shape.forEach((row, rOffset) => {
@@ -134,7 +139,7 @@ function lockMino() {
             }
         });
     });
-    currentMino = null; // 固定したら操作対象のミノをなくす
+    // currentMino = null; // spawnNewMinoで上書きされるので、ここでnullにしなくても良い
 
     // 新しいミノを出現させる処理
     spawnNewMino(); 
@@ -149,7 +154,7 @@ function lockMino() {
 /**
  * 自動落下に際し、ゲームボード全体をクリアし現在のミノを描画する
  */
-function redrawGameBoard() {
+export function redrawGameBoard() {
     // boardCellsが未初期化なら何もしない
     if (!boardCells.length) return;
 
@@ -216,7 +221,7 @@ export function spawnNewMino() {
         const shapeWidth = currentMino.shape[0] ? currentMino.shape[0].length : 0;
         currentMino.x = Math.floor((BOARD_WIDTH - shapeWidth) / 2);
 
-        // ★追加: ゲームオーバー判定 (新しいミノが出現位置で即衝突する場合)
+        // ゲームオーバー判定 (新しいミノが出現位置で即衝突する場合)
         if (checkCollision(currentMino, gameBoardState)) {
             gameStarted = false; // ゲーム終了状態
             if (gameOverMessage) { // DOM要素が初期化されていれば
@@ -245,6 +250,7 @@ function moveMinoDown() {
         lockMino();
     } else {
         currentMino.y++;
+        redrawGameBoard(); // 自動落下時はここで再描画
     }
     redrawGameBoard(); // 移動後または固定後の盤面を再描画
 }

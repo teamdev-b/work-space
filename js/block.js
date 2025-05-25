@@ -1,63 +1,29 @@
 import {
-    BOARD_WIDTH,
-    BOARD_HEIGHT,
-    GAME_BOARD_CELL_CLASS
-} from './constants.js';
-
-import {
     currentMino,
     gameStarted,
-    boardCells
+    getGameBoardState, 
+    redrawGameBoard as redrawGameboardFromGame, 
+    lockMino 
 } from './game.js';
 
-// 固定されたブロックを保存する配列（行×列の2次元配列）
-let fixedBlocks = [];
+import { checkCollision } from './collision.js';
 
 /**
- * 固定ブロック配列を初期化
- */
-export function initializeFixedBlocks() {
-    fixedBlocks = [];
-    for (let r = 0; r < BOARD_HEIGHT; r++) {
-        fixedBlocks[r] = [];
-        for (let c = 0; c < BOARD_WIDTH; c++) {
-            fixedBlocks[r][c] = null; // null = 空、文字列 = 色クラス名
-        }
-    }
-}
-
-/**
- * ミノが指定位置に配置可能かチェック
- * @param {Object} mino - チェックするミノ
+ * ミノが指定位置に配置可能かチェック (checkCollision を使用するように変更)
+ * @param {Object} minoToCheck - チェックするミノ (形状、現在のx, yを含む)
  * @param {number} newX - 新しいX座標
  * @param {number} newY - 新しいY座標
  * @returns {boolean} - 配置可能ならtrue
- * 
- * TODO: checkCollisionで統一する
  */
-function canPlaceMino(mino, newX, newY) {
-    if (!mino || !mino.shape) return false;
-
-    for (let r = 0; r < mino.shape.length; r++) {
-        for (let c = 0; c < mino.shape[r].length; c++) {
-            if (mino.shape[r][c] === 1) {
-                const boardX = newX + c;
-                const boardY = newY + r;
-
-                // 範囲外チェック
-                if (boardX < 0 || boardX >= BOARD_WIDTH ||
-                    boardY < 0 || boardY >= BOARD_HEIGHT) {
-                    return false;
-                }
-
-                // 固定ブロックとの衝突チェック
-                if (fixedBlocks[boardY] && fixedBlocks[boardY][boardX] !== null) {
-                    return false;
-                }
-            }
-        }
-    }
-    return true;
+function canPlaceMino(minoToCheck, newX, newY) {
+    if (!minoToCheck || !minoToCheck.shape) return true; // ミノがない場合は配置可能とする（エラー回避）
+    
+    const tempMino = { // 判定用の仮ミノオブジェクト
+        ...minoToCheck,
+        x: newX,
+        y: newY
+    };
+    return !checkCollision(tempMino, getGameBoardState());
 }
 
 /**
@@ -80,52 +46,13 @@ function rotateShape(shape) {
 }
 
 /**
- * ゲームボード全体を再描画（固定ブロック + 現在のミノ）
- */
-function redrawGameBoard() {
-    if (!boardCells.length) return;
-
-    // 全セルをクリア
-    boardCells.forEach(row =>
-        row.forEach(cell => cell.className = GAME_BOARD_CELL_CLASS)
-    );
-
-    // 固定ブロックを描画
-    for (let r = 0; r < BOARD_HEIGHT; r++) {
-        for (let c = 0; c < BOARD_WIDTH; c++) {
-            if (fixedBlocks[r][c] !== null) {
-                boardCells[r][c].className = `${GAME_BOARD_CELL_CLASS} ${fixedBlocks[r][c]}`;
-            }
-        }
-    }
-
-    // 現在のミノを描画
-    if (currentMino) {
-        currentMino.shape.forEach((row, r_offset) => {
-            row.forEach((cellValue, c_offset) => {
-                if (cellValue === 1) {
-                    const targetRow = currentMino.y + r_offset;
-                    const targetCol = currentMino.x + c_offset;
-                    if (boardCells[targetRow] && boardCells[targetRow][targetCol]) {
-                        boardCells[targetRow][targetCol].className =
-                            `${GAME_BOARD_CELL_CLASS} ${currentMino.color}`;
-                    }
-                }
-            });
-        });
-    }
-}
-
-/**
  * ブロックを左に移動
  */
 function moveLeft() {
     if (!currentMino || !gameStarted) return;
-
-    const newX = currentMino.x - 1;
-    if (canPlaceMino(currentMino, newX, currentMino.y)) {
-        currentMino.x = newX;
-        redrawGameBoard();
+    if (canPlaceMino(currentMino, currentMino.x - 1, currentMino.y)) {
+        currentMino.x--;
+        redrawGameboardFromGame(); // game.jsの描画関数を呼び出す
     }
 }
 
@@ -134,11 +61,9 @@ function moveLeft() {
  */
 function moveRight() {
     if (!currentMino || !gameStarted) return;
-
-    const newX = currentMino.x + 1;
-    if (canPlaceMino(currentMino, newX, currentMino.y)) {
-        currentMino.x = newX;
-        redrawGameBoard();
+    if (canPlaceMino(currentMino, currentMino.x + 1, currentMino.y)) {
+        currentMino.x++;
+        redrawGameboardFromGame(); // game.jsの描画関数を呼び出す
     }
 }
 
@@ -147,20 +72,15 @@ function moveRight() {
  */
 function rotateMino() {
     if (!currentMino || !gameStarted) return;
-
-    const rotatedShape = rotateShape(currentMino.shape);
     const originalShape = currentMino.shape;
+    const rotatedShape = rotateShape(originalShape);
+    const tempMinoForRotation = { ...currentMino, shape: rotatedShape };
 
-    // 一時的に回転後の形状を設定してチェック
-    currentMino.shape = rotatedShape;
-
-    if (canPlaceMino(currentMino, currentMino.x, currentMino.y)) {
-        // 回転可能な場合はそのまま
-        redrawGameBoard();
-    } else {
-        // 回転不可能な場合は元に戻す
-        currentMino.shape = originalShape;
+    if (canPlaceMino(tempMinoForRotation, currentMino.x, currentMino.y)) {
+        currentMino.shape = rotatedShape;
+        redrawGameboardFromGame(); // game.jsの描画関数を呼び出す
     }
+    // 壁キックなどのロジックをここに追加することも可能
 }
 
 /**
@@ -168,11 +88,13 @@ function rotateMino() {
  */
 function softDrop() {
     if (!currentMino || !gameStarted) return;
-
-    const newY = currentMino.y + 1;
-    if (canPlaceMino(currentMino, currentMino.x, newY)) {
-        currentMino.y = newY;
-        redrawGameBoard();
+    if (canPlaceMino(currentMino, currentMino.x, currentMino.y + 1)) {
+        currentMino.y++;
+        redrawGameboardFromGame(); // game.jsの描画関数を呼び出す
+        // ソフトドロップで得点がある場合はここで処理
+    } else {
+        // 下に動かせない場合は固定処理をgame.jsのlockMinoに任せる
+        lockMino(); // 固定処理を呼び出す
     }
 }
 
@@ -181,23 +103,21 @@ function softDrop() {
  */
 function hardDrop() {
     if (!currentMino || !gameStarted) return;
-
-    // 一番下まで移動可能な位置を探す
-    let dropY = currentMino.y;
-    while (canPlaceMino(currentMino, currentMino.x, dropY + 1)) {
-        dropY++;
+    let y = currentMino.y;
+    while (canPlaceMino(currentMino, currentMino.x, y + 1)) {
+        y++;
     }
-
-    // 位置を更新
-    currentMino.y = dropY;
-    redrawGameBoard();
+    currentMino.y = y;
+    // redrawGameboardFromGame(); // lockMinoが描画するので不要
+    lockMino(); // game.jsの固定処理と再描画を呼び出す
 }
 
 /**
  * キーボードイベントリスナー
  */
 function handleKeyPress(event) {
-    if (!gameStarted) return;
+    // currentMino が null の場合も操作不可
+    if (!gameStarted || !currentMino) return;
 
     switch (event.key) {
         case 'ArrowLeft':
@@ -230,48 +150,8 @@ function handleKeyPress(event) {
  */
 export function initializeBlockControls() {
     // 固定ブロック配列を初期化
-    initializeFixedBlocks();
+    // initializeFixedBlocks();
 
     // キーボードイベントリスナーを設定
     document.addEventListener('keydown', handleKeyPress);
 }
-
-/**
- * 現在のミノを固定ブロックとして配置
- * この関数は他のモジュールから呼び出される想定
- */
-export function fixCurrentMino() {
-    if (!currentMino) return;
-
-    currentMino.shape.forEach((row, r_offset) => {
-        row.forEach((cellValue, c_offset) => {
-            if (cellValue === 1) {
-                const targetRow = currentMino.y + r_offset;
-                const targetCol = currentMino.x + c_offset;
-                if (targetRow >= 0 && targetRow < BOARD_HEIGHT &&
-                    targetCol >= 0 && targetCol < BOARD_WIDTH) {
-                    fixedBlocks[targetRow][targetCol] = currentMino.color;
-                }
-            }
-        });
-    });
-}
-
-/**
- * 衝突判定のユーティリティ関数（他のモジュールから利用可能）
- */
-export function checkCollision(mino, newX, newY) {
-    return !canPlaceMino(mino, newX, newY);
-}
-
-/**
- * 固定ブロック配列を取得（他のモジュールから参照可能）
- */
-export function getFixedBlocks() {
-    return fixedBlocks;
-}
-
-/**
- * ゲームボード再描画関数をエクスポート（game.jsから利用）
- */
-export { redrawGameBoard };
