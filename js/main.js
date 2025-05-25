@@ -1,6 +1,7 @@
 import {
 	initializeBoardAndNextArea,
 	handleStartButtonClick,
+	handleReStartButtonClick,
 	initGameDOMElements
 } from './game.js';
 
@@ -16,6 +17,7 @@ const scoreDisplay = document.getElementById('score-display');
 const startPauseButton = document.getElementById('start-pause-button');
 const nextMinoArea = document.getElementById('next-mino-area');
 const gameOverMessage = document.getElementById('game-over-message');
+const restartButton = document.getElementById('restart-button');
 
 // DOM参照をgame.jsへ渡す
 initGameDOMElements({
@@ -31,7 +33,11 @@ initGameDOMElements({
   イベントリスナーの設定
 ================================================================================
 */
+// ゲームスタート
 startPauseButton.addEventListener('click', handleStartButtonClick);
+
+// ゲームオーバー時のリトライ
+restartButton.addEventListener('click', handleReStartButtonClick);
 
 /*
 ================================================================================

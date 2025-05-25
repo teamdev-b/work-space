@@ -290,7 +290,7 @@ function startGameLoop() {
 }
 
 /*
-* ボタンクリック時の開始関数
+* スタートボタンクリック時の開始関数
 */
 export function handleStartButtonClick() {
     if (!gameStarted) { // 既に開始していたら何もしない
@@ -311,4 +311,17 @@ export function handleStartButtonClick() {
     }
 
     // TODO: ゲーム中に再度押された場合のポーズ/再開処理
+}
+
+/*
+* ゲームオーバー時のリスタート関数
+*/
+export function handleReStartButtonClick() {
+    // ゲームオーバー画面を閉じる
+    if(gameOverMessage) {
+        gameOverMessage.classList.add('hidden');
+    }
+
+    // ゲームの状態を初期化する
+    initializeBoardAndNextArea(); 
 }
