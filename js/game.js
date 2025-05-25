@@ -118,7 +118,7 @@ export function drawMinoOnGrid(mino, gridCellArray, baseCellClass) {
 }
 
 /**
- * ミノをゲームボードに固定する関数
+ * ミノを固定した後、新しいミノをスポーンし、盤面を再描画
  */
 function lockMino() {
     if (!currentMino) return;
@@ -135,7 +135,14 @@ function lockMino() {
         });
     });
     currentMino = null; // 固定したら操作対象のミノをなくす
-    // TODO: 新しいミノを出す
+
+    // 新しいミノを出現させる処理
+    spawnNewMino(); 
+    
+    // 固定された盤面と新しいミノ（ゲームオーバーでなければ）を描画
+    redrawGameBoard(); 
+
+    // TODO: ライン消去処理
 }
 
 
@@ -198,7 +205,7 @@ export function displayNextMino() {
 }
 
 /*
-* メインフィールドとNextにミノを配置する
+* 新しいミノをスポーンし、ゲームオーバー判定を行う
 */
 export function spawnNewMino() {
     currentMino = nextMino;
@@ -208,6 +215,17 @@ export function spawnNewMino() {
         currentMino.y = 0;
         const shapeWidth = currentMino.shape[0] ? currentMino.shape[0].length : 0;
         currentMino.x = Math.floor((BOARD_WIDTH - shapeWidth) / 2);
+
+        // ★追加: ゲームオーバー判定 (新しいミノが出現位置で即衝突する場合)
+        if (checkCollision(currentMino, gameBoardState)) {
+            gameStarted = false; // ゲーム終了状態
+            if (gameOverMessage) { // DOM要素が初期化されていれば
+                gameOverMessage.classList.remove('hidden');
+                // TODO: finalScoreDisplay にスコアを表示するなどの処理
+            }
+            currentMino = null; // 操作ミノをなくす
+            // ゲームループは gameLoop関数内の gameStarted チェックで停止する
+        }
 
         // 重複描画を避けるため、spawnNewMino時の描画はredrawGameBoardに任せる
         // boardCells.forEach(row => row.forEach(cell => cell.className = GAME_BOARD_CELL_CLASS));
@@ -287,7 +305,11 @@ export function handleStartButtonClick() {
         spawnNewMino();          // currentMino と次の nextMino を準備
         redrawGameBoard();       // 初期配置の currentMino を描画
 
-        // ゲームループを開始
-        startGameLoop();
+        // ゲームオーバーでなければループ開始
+        if (gameStarted) {
+            startGameLoop();
+        }
     }
+
+    // TODO: ゲーム中に再度押された場合のポーズ/再開処理
 }

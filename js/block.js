@@ -32,6 +32,8 @@ export function initializeFixedBlocks() {
  * @param {number} newX - 新しいX座標
  * @param {number} newY - 新しいY座標
  * @returns {boolean} - 配置可能ならtrue
+ * 
+ * TODO: checkCollisionで統一する
  */
 function canPlaceMino(mino, newX, newY) {
     if (!mino || !mino.shape) return false;
