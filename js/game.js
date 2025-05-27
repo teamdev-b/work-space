@@ -256,6 +256,10 @@ export function spawnNewMino() {
             if (gameOverMessage) { // DOM要素が初期化されていれば
                 gameOverMessage.classList.remove('hidden');
                 // TODO: finalScoreDisplay にスコアを表示するなどの処理
+                const finalScoreElem = document.getElementById('final-score');
+                if (finalScoreElem && scoreDisplay) {
+                    finalScoreElem.textContent = scoreDisplay.textContent;
+                }
             }
             currentMino = null; // 操作ミノをなくす
         }
