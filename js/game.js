@@ -123,6 +123,19 @@ export function drawMinoOnGrid(mino, gridCellArray, baseCellClass) {
 }
 
 /**
+ * ライン消去処理
+ */
+function clearFullLines() {
+    const newBoard = gameBoardState.filter(row => row.some(cell => cell === 0));
+    const linesCleared = BOARD_HEIGHT - newBoard.length;
+    for (let i = 0; i < linesCleared; i++) {
+        newBoard.unshift(Array(BOARD_WIDTH).fill(0));
+    }
+    gameBoardState = newBoard;
+    return linesCleared;
+}
+
+/**
  * ミノを固定した後、新しいミノをスポーンし、盤面を再描画
  */
 export function lockMino() {
@@ -139,6 +152,24 @@ export function lockMino() {
             }
         });
     });
+ 
+    // ライン消去処理を呼び出し
+    const cleared = clearFullLines();
+    if (cleared > 0) {
+        const currentScore = parseInt(scoreDisplay.textContent, 10) || 0;
+
+        // ライン数に応じたスコアテーブル
+        const scoreTable = {
+            1: 100,
+            2: 300,
+            3: 500,
+            4: 800
+        };
+
+        const addedScore = scoreTable[cleared] || 0;
+        scoreDisplay.textContent = currentScore + addedScore;
+    }
+
     // 新しいミノを出現させる処理
     spawnNewMino(); 
     
